@@ -1,9 +1,9 @@
 ---
 title: "PRF_plotting"
 output:
-  pdf_document: default
   html_document:
     keep_md: yes
+  pdf_document: default
 ---
 
 # Index
@@ -392,7 +392,9 @@ wrap_plot(SEplot,c(0.7,0.3),ROIc)
 polplot=ggplot(myfile_denoised, aes(x = ang)) +
   geom_histogram(binwidth = 15, aes(fill=ROI)) +
   scale_x_continuous(breaks = seq(0, 360, 60))+theme_bw()+
-  coord_polar(start=deg2rad(90),direction=1)+facet_wrap(~ROI,nrow=facetval)+scale_fill_manual(values=pal)+ theme(legend.position="bottom")
+  coord_polar(start=deg2rad(-90),direction=-1)+facet_wrap(~ROI,nrow=facetval)+scale_fill_manual(values=pal)+ theme(legend.position="bottom")
+
+
 
 wrap_plot2(polplot,c(0.7,0.3),ROIc,Ac)
 
