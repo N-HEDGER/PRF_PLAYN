@@ -16,5 +16,5 @@ This repo will be used for me to become more proficient at working with prf data
 | [SURFACE_PLAY](https://nbviewer.jupyter.org/github/N-HEDGER/PRF_PLAYN/blob/master/SURFACE_PLAY_NILEARN.ipynb). | 4 | Here I start trying to understand surface-based data using NILEARN(view with nbviewer for 3d surface plots) |
 | [Surface pre-processing](https://nbviewer.jupyter.org/github/N-HEDGER/PRF_PLAYN/blob/master/SURFACE_PRE_PROCESS.ipynb) | 5 | Pre-processing the surface data |
 | [Format](https://nbviewer.jupyter.org/github/N-HEDGER/PRF_PLAYN/blob/master/Pickle2csv.ipynb) | 6 | (after fitting the models on the cluster (see jobscripts folder) Formatting of the model fits and some initial presentations (view with nbviewer for 3d surface plots)|
-| [Model presentation](/Prf_pres.md) | 7 | Presenting the models. |
+| [Model presentation](https://n-hedger.github.io/PRF_PLAYN/Prf_pres.html#sig) | 7 | Presenting the models. |
 ***
