@@ -13,8 +13,8 @@ This repo will be used for me to become more proficient at working with prf data
 | [POPEYENB](/POPEYENB.ipynb) | 2 | This is my exploration of the popeye API - a package for fitting prf models.|
 | [Post-fmriprep](/Post-fmriprep.ipynb) | 3 |  These are further stages of pre-processing after a call to fmriprep. |
 | [Model fitting](/Model-fitting.ipynb). | 4 | The model fitting itself themselves. |
-| [SURFACE_PLAY](/SURFACE_PLAY_NILEARN.ipynb). | 4 | Here I start investigating surface-based data using NILEARN. |
+| [SURFACE_PLAY](/SURFACE_PLAY_NILEARN.ipynb). | 4 | Here I start trying to understand surface-based data using NILEARN(view with nbviewer for 3d surface plots) |
 | [Surface pre-processing](/SURFACE_PRE_PROCESS.ipynb) | 5 | Pre-processing the surface data |
-| [Format](/Pickle2csv.ipynb) | 6 | Formatting the model fits and some initial presentations (view with nbviewer for 3d surface plots)|
-| Model presentation | 7 | Presenting the models. |
+| [Format](/Pickle2csv.ipynb) | 6 | (after fitting the models on the cluster (see jobscripts folder) Formatting of the model fits and some initial presentations (view with nbviewer for 3d surface plots)|
+| [Model presentation](/Prf_pres.md) | 7 | Presenting the models. |
 ***
