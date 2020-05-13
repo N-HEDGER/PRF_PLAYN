@@ -1,0 +1,20 @@
+# PRF_PLAY
+
+This repo will be used for me to become more proficient at working with prf data/ analyses. It will consist of several notebooks. In these notebooks I will work with the data from this article https://www.sciencedirect.com/science/article/pii/S0960982219304105. Note that this dataset consists of very many sessions. Therefore, I will be focusing on just a subset of this data. 
+
+
+## Notebooks
+
+
+# Index
+| Notebook | Phase | Description |
+| --- | --- | --- |
+| [Data_prelim](/Data_prelim.ipynb) | 1 | This is an initial inspection of the data from the Van Es cerebellum paper. |
+| [POPEYENB](/POPEYENB.ipynb) | 2 | This is my exploration of the popeye API - a package for fitting prf models.|
+| [Post-fmriprep](/Post-fmriprep.ipynb) | 3 |  These are further stages of pre-processing after a call to fmriprep. |
+| [Model fitting](/Model-fitting.ipynb). | 4 | The model fitting itself themselves. |
+| [SURFACE_PLAY](/SURFACE_PLAY_NILEARN.ipynb). | 4 | Here I start investigating surface-based data using NILEARN. |
+| [Surface pre-processing](/SURFACE_PRE_PROCESS.ipynb) | 5 | Pre-processing the surface data |
+| [Format](/Pickle2csv.ipynb) | 6 | Formatting the model fits and some initial presentations (view with nbviewer for 3d surface plots)|
+| Model presentation | 7 | Presenting the models. |
+***
