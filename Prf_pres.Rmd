@@ -18,6 +18,9 @@ output:
 | [Eccentricity](#ecc) | Eccentricity plots |
 | [Eccentricity x Size](#eccs) | Relationship between size and eccentricity  |
 | [Polar angle](#ang) | Polar angle plots  |
+| [Noise](#Noise) | Plot that shows fit of the noise model  |
+| [Percent Signal Change](#psc) | Gif of psc change over time  |
+
 
 
 
@@ -45,14 +48,13 @@ Below is the dataset:
 
 
 ```{r, echo=FALSE,results='asis'}
-myfile=read.csv('/Volumes/BAHAMUT/OUTPUT/prfparams.csv')
-myfile$col=rep("",nrow(myfile))
+myfile=read.csv('/Volumes/BAHAMUT/OUTPUT/FULL/params.csv')
 
-cfile=read.csv('/Volumes/BAHAMUT/OUTPUT/prfcols.csv')
+#cfile=read.csv('/Volumes/BAHAMUT/OUTPUT/prfcols.csv')
 
-cfile$code=rgb(cfile$R,cfile$G,cfile$B,cfile$v)
+#cfile$code=rgb(cfile$R,cfile$G,cfile$B,cfile$v)
 
-cfile$ROI=str_c(cfile$ROI,'l')
+#cfile$ROI=str_c(cfile$ROI,'l')
 
 
 ftab=function(frame,title){
@@ -66,12 +68,14 @@ print(x3d)
 }
 
 
-for (i in 1:length(levels(myfile$ROI))){
-  myfile[myfile$ROI==levels(myfile$ROI)[i],]$col=rep(cfile[cfile$ROI==levels(myfile$ROI)[i],]$code[1])
+#for (i in 1:length(levels(myfile$ROI))){
+ # myfile[myfile$ROI==levels(myfile$ROI)[i],]$col=rep(cfile[cfile$ROI==levels(myfile$ROI)[i],]$code[1])
 
-}
+#}
 
-ftab(myfile,"Data")
+myfile$Hemisphere=c(rep(1,nrow(myfile)/2),rep(2,nrow(myfile)/2))
+
+ftab(head(myfile),"Data")
 
 
 ```
@@ -80,14 +84,14 @@ Also define the images, and a function for making viridis colorbars (this code b
 
 ```{r,echo=FALSE,results=FALSE}
 
-Bplot1='/Volumes/BAHAMUT/OUTPUT/Bplot1.png'
-Bplot2='/Volumes/BAHAMUT/OUTPUT/Bplot2.png'
-Bplot3='/Volumes/BAHAMUT/OUTPUT/Bplot3.png'
+#Bplot1='/Volumes/BAHAMUT/OUTPUT/Bplot1.png'
+#Bplot2='/Volumes/BAHAMUT/OUTPUT/Bplot2.png'
+#Bplot3='/Volumes/BAHAMUT/OUTPUT/Bplot3.png'
 
-bplot1=ggdraw()+draw_image(Bplot1,scale=1)
-bplot2=ggdraw()+draw_image(Bplot2,scale=1)
-bplot3=ggdraw()+draw_image(Bplot3,scale=1)
-ROIc=plot_grid(bplot1,bplot2,bplot3,ncol=1)
+#bplot1=ggdraw()+draw_image(Bplot1,scale=1)
+#bplot2=ggdraw()+draw_image(Bplot2,scale=1)
+#bplot3=ggdraw()+draw_image(Bplot3,scale=1)
+#ROIc=plot_grid(bplot1,bplot2,bplot3,ncol=1)
 
 colorscale=function(kind,lim,ylab){
 
@@ -100,7 +104,7 @@ x=data.frame(cbind(ang,val))
 p2 <- ggplot(data = x, aes(x = ang,y=val)) +
 geom_tile(aes(color=ang),size=2) +
 scale_x_continuous(breaks = seq(0, 360, 60))+scale_y_continuous(limits=c(99.5,100.5))+
-coord_polar(start=deg2rad(-90),direction=-1)+theme_void()+
+coord_polar(start=deg2rad(0),direction=1)+theme_void()+
 scale_color_viridis(option='plasma')+ theme(legend.position = "none")
 } else {
 
@@ -120,80 +124,53 @@ scale_color_viridis(option='plasma')+ theme(legend.position="none")+theme_classi
 }
 
 
-RC=colorscale('up',90,"R2")
-EC=colorscale('up',10,"Eccentricity")
+RC=colorscale('up',max(na.omit(myfile$R2)),"R2")
+EC=colorscale('up',15,"Eccentricity")
 AC=colorscale('polar',10,"Polar Angle")
-SC=colorscale('up',5,"Sigma")
+SC=colorscale('up',10,"Sigma")
+NC=colorscale('up',60,"Noise R2")
 
 
-Rplot1='/Volumes/BAHAMUT/OUTPUT/Rplot1.png'
-Rplot2='/Volumes/BAHAMUT/OUTPUT/Rplot2.png'
-Rplot3='/Volumes/BAHAMUT/OUTPUT/Rplot3.png'
-
-rplot1=ggdraw()+draw_image(Rplot1,scale=1)
-rplot2=ggdraw()+draw_image(Rplot2,scale=1)
-rplot3=ggdraw()+draw_image(Rplot3,scale=1)
+zoom=1
 
 
-R2c=plot_grid(rplot1,rplot2,rplot3,RC,nrow=1,rel_widths = c(0.25,0.25,0.25,0.25))
+Rplot1='/Volumes/BAHAMUT/OUTPUT/FULL/R2flat.png'
+rplot1=ggdraw()+draw_image(Rplot1,scale=zoom)
+R2c=plot_grid(rplot1,RC,nrow=1,rel_widths = c(0.8,0.2))
 
 
 
-Aplot1='/Volumes/BAHAMUT/OUTPUT/Angplot1.png'
-Aplot2='/Volumes/BAHAMUT/OUTPUT/Angplot2.png'
-Aplot3='/Volumes/BAHAMUT/OUTPUT/Angplot3.png'
-
-aplot1=ggdraw()+draw_image(Aplot1,scale=1)
-aplot2=ggdraw()+draw_image(Aplot2,scale=1)
-aplot3=ggdraw()+draw_image(Aplot3,scale=1)
-
-
-Ac=plot_grid(aplot1,aplot2,aplot3,AC,nrow=1,rel_widths = c(0.25,0.25,0.25,0.25))
+Aplot1='/Volumes/BAHAMUT/OUTPUT/FULL/angleflat.png'
+aplot1=ggdraw()+draw_image(Aplot1,scale=zoom)
+Ac=plot_grid(aplot1,AC,nrow=1,rel_widths = c(0.8,0.2))
 
 
 
-Eplot1='/Volumes/BAHAMUT/OUTPUT/Eplot1.png'
-Eplot2='/Volumes/BAHAMUT/OUTPUT/Eplot2.png'
-Eplot3='/Volumes/BAHAMUT/OUTPUT/Eplot3.png'
+Eplot1='/Volumes/BAHAMUT/OUTPUT/FULL/eccentricityflat.png'
 
-eplot1=ggdraw()+draw_image(Eplot1,scale=1)
-eplot2=ggdraw()+draw_image(Eplot2,scale=1)
-eplot3=ggdraw()+draw_image(Eplot3,scale=1)
+eplot1=ggdraw()+draw_image(Eplot1,scale=zoom)
 
 
-Ec=plot_grid(eplot1,eplot2,eplot3,EC,nrow=1,rel_widths = c(0.25,0.25,0.25,0.25))
+Ec=plot_grid(eplot1,EC,nrow=1,rel_widths = c(0.8,0.2))
 
 
-Splot1='/Volumes/BAHAMUT/OUTPUT/Splot1.png'
-Splot2='/Volumes/BAHAMUT/OUTPUT/Splot2.png'
-Splot3='/Volumes/BAHAMUT/OUTPUT/Splot3.png'
+Splot1='/Volumes/BAHAMUT/OUTPUT/FULL/sigmaflat.png'
 
-splot1=ggdraw()+draw_image(Splot1,scale=1)
-splot2=ggdraw()+draw_image(Splot2,scale=1)
-splot3=ggdraw()+draw_image(Splot3,scale=1)
+splot1=ggdraw()+draw_image(Splot1,scale=zoom)
+
+Sc=plot_grid(splot1,SC,nrow=1,rel_widths = c(0.8,0.2))
 
 
-Sc=plot_grid(splot1,splot2,splot3,SC,nrow=1,rel_widths = c(0.25,0.25,0.25,0.25))
+Nplot1='/Volumes/BAHAMUT/OUTPUT/FULL/noiseflat.png'
+
+nplot1=ggdraw()+draw_image(Nplot1,scale=zoom)
+
+Nc=plot_grid(nplot1,NC,nrow=1,rel_widths = c(0.8,0.2))
 
 
 ```
 
 
-
-Convert X and Y to polar.
-
-
-```{r}
-myfile$ecc=rep(0,nrow(myfile))
-myfile$ang=rep(0,nrow(myfile))
-
-
-for (i in 1:nrow(myfile)){
-  myfile$ecc[i]=sqrt((myfile$X[i]^2)+(myfile$Y[i]^2))
-  myfile$ang[i]=rad2deg(atan2(myfile$Y[i],myfile$X[i])%%(2*pi))
-  
-}
-```
 
 
 Set up some constants.
@@ -202,6 +179,11 @@ Set up some constants.
 nROIS=length(unique(myfile$ROI))
 facetval=floor(sqrt(nROIS))
 recipe=list(scale_fill_manual(values=c("steelblue2","springgreen3")),theme_classic(),theme(axis.text.x = element_text(angle = 90)))
+
+
+ROILABS=c("None","V1","V2","V3","hV4","VO1","VO2","LO1","LO2","TO1","TO2","V3b","V3a")
+
+myfile$ROI=factor(myfile$ROI,levels=c(0:12),labels=ROILABS)
 
 ```
 
@@ -235,7 +217,7 @@ Now view this as a function of ROI
 
 
 ```{r}
-varexROI=ggplot(data = myfile,aes(x = R2))+geom_histogram(color="black",aes(fill=noisesep),binwidth=.01, position="identity")+geom_vline(xintercept=thresh)+facet_wrap(~ROI,nrow=facetval)+recipe
+varexROI=ggplot(data = myfile[myfile$ROI!="None",],aes(x = R2))+geom_histogram(color="black",aes(fill=noisesep),binwidth=.01, position="identity")+geom_vline(xintercept=thresh)+facet_wrap(~ROI,nrow=facetval)+recipe
 varexROI
 ```
 
@@ -253,11 +235,16 @@ Show position of prfs in relation to the screen.
 
 
 ```{r}
-ggplot(data=myfile,aes(x=X,y=Y))+geom_rect(xmin=-10,xmax=10,ymin=-10,ymax=10)+geom_point(aes(colour=onscreen))+recipe
+ggplot(data=myfile[myfile$ROI!="None",],aes(x=X,y=Y))+geom_rect(xmin=-10,xmax=10,ymin=-10,ymax=10)+geom_point(aes(colour=onscreen))+recipe
 ```
 
 ```{r}
-ggplot(data=myfile,aes(x=X,y=Y))+geom_rect(xmin=-10,xmax=10,ymin=-10,ymax=10)+geom_point(aes(colour=noisesep))+recipe
+ggplot(data=myfile[myfile$ROI!="None",],aes(x=X,y=Y))+geom_rect(xmin=-10,xmax=10,ymin=-10,ymax=10)+geom_point(aes(colour=ang))+recipe+scale_colour_viridis(option='plasma')
+```
+
+
+```{r}
+ggplot(data=myfile[myfile$ROI!="None",],aes(x=X,y=Y))+geom_rect(xmin=-10,xmax=10,ymin=-10,ymax=10)+geom_point(aes(colour=noisesep))+recipe
 ```
 
 
@@ -284,6 +271,10 @@ Now get rid of the noisy voxels.
 myfile_denoised=myfile[myfile$noisesep=="signal",]
 myfile_denoised=na.omit(myfile_denoised)
 
+myfile_denoised=myfile_denoised[myfile_denoised$ROI!="None",]
+
+myfile_denoised=myfile_denoised[myfile_denoised$onscreen==1,]
+
 ```
 
 <a id='cov'></a>
@@ -292,42 +283,15 @@ myfile_denoised=na.omit(myfile_denoised)
 
 Show visual field coverage, but this time confined to the screen.
 
-```{r,fig.width=15,fig.height=15}
-VFplot=ggplot()+geom_hline(yintercept=0,colour='white')+
-theme_classic()+theme(panel.background = element_rect(fill='black'))+geom_vline(xintercept=0,colour='white')+geom_circle(data=myfile_denoised,mapping=aes(x0=X,y0=Y,r=S/2),alpha=.01,fill='white',colour='transparent')+xlim(-10,10)+ylim(-10,10)+coord_fixed()
-VFplot
-```
-
 
 Also plot as a function of ROI.
 
 ```{r,fig.width=15,fig.height=15}
-library(dplyr)
-ctable=distinct(myfile_denoised,ROI,col)
-pal=ctable$col
-names(pal)=ctable$ROI
-pal
-
-
-wrap_plot=function(plot,widths,c2){
-plot_grid(plot,c2,rel_widths = c(0.7,0.3))
-}
-
-
-wrap_plot2=function(plot,widths,c2,r2){
-
-  
-r1=plot_grid(plot,c2,rel_widths = c(0.7,0.3))
-plot_grid(r2,r1,ncol=1,rel_heights = c(0.2,0.8))
-
-}
-
-
 
 cov1=ggplot()+geom_hline(yintercept=0,colour='white')+
-theme_classic()+theme(panel.background = element_rect(fill='black'))+geom_vline(xintercept=0,colour='white')+geom_circle(data=myfile_denoised,mapping=aes(x0=X,y0=Y,r=S/2,fill=ROI),colour='transparent')+xlim(-10,10)+ylim(-10,10)+coord_fixed()+facet_wrap(~ROI,nrow=facetval)+scale_fill_manual(values=pal)+ theme(legend.position="bottom")
+theme_classic()+theme(panel.background = element_rect(fill='black'))+geom_vline(xintercept=0,colour='white')+geom_circle(alpha=.1,data=myfile_denoised,mapping=aes(x0=X,y0=Y,r=sigma/2,fill=ROI,alpha=.1),colour='transparent')+xlim(-10,10)+ylim(-10,10)+coord_fixed()+facet_wrap(~ROI,nrow=facetval)+ theme(legend.position="bottom")+theme(legend.position = "None")+scale_colour_viridis(discrete = TRUE,option='plasma')
 
-wrap_plot(cov1,c(0.7,0.3),ROIc)
+cov1
 ```
 
 ```{r,fig.width=15,fig.height=15}
@@ -341,10 +305,11 @@ ggplot(myfile_denoised, aes(x = X, y = Y))+xlim(-10,10)+ylim(-10,10)+geom_hline(
 
 
 ```{r,fig.width=15,fig.height=15}
-R2plot=ggplot(myfile_denoised,aes(x = reorder(ROI, R2, FUN = mean),y=R2*100))+recipe+stat_summary(fun.y = mean, geom = "bar", width = 0.5,aes(fill=ROI))+stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.3)+scale_fill_manual(values=pal)+ theme(legend.position="bottom")+xlab("ROI")+ylab("Variance explained")
+R2plot=ggplot(myfile_denoised,aes(x = reorder(ROI, R2, FUN = mean),y=R2))+theme_classic(base_size=24)+stat_summary(fun = mean, geom = "bar", width = 0.5,aes(fill=..y..))+stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.3)+ theme(legend.position="bottom")+xlab("ROI")+ylab("Variance explained")+ scale_fill_viridis_c(option='plasma',begin=0,end = 0.8)+theme(legend.position = "None")
 
-wrap_plot2(R2plot,c(0.7,0.3),ROIc,R2c)
 
+
+plot_grid(R2plot,R2c,nrow = 2,rel_heights = c(0.4,0.6))
 ```
 
 <a id='sig'></a>
@@ -352,9 +317,9 @@ wrap_plot2(R2plot,c(0.7,0.3),ROIc,R2c)
 # Variable summaries: Sigma
 
 ```{r,fig.width=15,fig.height=15}
-Splot=ggplot(myfile_denoised,aes(x = reorder(ROI, S, FUN = mean),y=S))+recipe+stat_summary(fun.y = mean, geom = "bar", width = 0.5,aes(fill=ROI))+stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.3)+scale_fill_manual(values=pal)+ theme(legend.position="bottom")+xlab("ROI")+ylab("Sigma")
+Splot=ggplot(myfile_denoised,aes(x = reorder(ROI, sigma, FUN = mean),y=sigma))+theme_classic(base_size=24)+stat_summary(fun = mean, geom = "bar", width = 0.5,aes(fill=..y..))+stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.3)+ theme(legend.position="none")+xlab("ROI")+ylab("Sigma")+ scale_fill_viridis_c(option='plasma',begin=0,end=0.5)
 
-wrap_plot2(Splot,c(0.7,0.3),ROIc,Sc)
+plot_grid(Splot,Sc,nrow = 2,rel_heights = c(0.4,0.6))
 
 ```
 
@@ -366,9 +331,10 @@ wrap_plot2(Splot,c(0.7,0.3),ROIc,Sc)
 # Variable summaries: Eccentricity
 
 ```{r,fig.width=15,fig.height=15}
-Eplot=ggplot(myfile_denoised,aes(x = reorder(ROI, ecc, FUN = mean),y=ecc))+recipe+stat_summary(fun.y = mean, geom = "bar", width = 0.5,aes(fill=ROI))+stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.3)+scale_fill_manual(values=pal)+ theme(legend.position="bottom")+xlab("ROI")+ylab("Eccentricity")
+Eplot=ggplot(myfile_denoised,aes(x = reorder(ROI, ecc, FUN = mean),y=ecc))+theme_classic(base_size=24)+stat_summary(fun = mean, geom = "bar", width = 0.5,aes(fill=..y..))+stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.3)+ theme(legend.position="none")+xlab("ROI")+ylab("Eccentricity")+ scale_fill_viridis_c(option='plasma',begin=0,end=0.3)
 
-wrap_plot2(Eplot,c(0.7,0.3),ROIc,Ec)
+
+plot_grid(Eplot,Ec,nrow = 2,rel_heights = c(0.4,0.6))
 
 ```
 
@@ -378,9 +344,10 @@ wrap_plot2(Eplot,c(0.7,0.3),ROIc,Ec)
 # Variable summaries: Eccentricity x sigma
 
 ```{r,fig.width=15,fig.height=15}
-SEplot=ggplot(myfile_denoised,aes(x = S,y=ecc))+recipe+geom_point(aes(color=ROI))+scale_color_manual(values=pal)+ theme(legend.position="bottom")+geom_smooth(method='lm',colour='black')+facet_wrap(~ROI,nrow=facetval)+xlab("Size")+ylab("Eccentricity")
+SEplot=ggplot(myfile_denoised,aes(x = ecc,y=sigma))+recipe+geom_point(aes(color=ROI))+ theme(legend.position="bottom")+theme_classic(base_size=24)+geom_smooth(method='lm',colour='black')+facet_wrap(~ROI,nrow=facetval)+xlab("Size")+ylab("Eccentricity")+scale_colour_viridis(discrete = TRUE,option='plasma')+ theme(legend.position="none")
 
-wrap_plot(SEplot,c(0.7,0.3),ROIc)
+SEplot
+
 ```
 
 
@@ -390,17 +357,30 @@ wrap_plot(SEplot,c(0.7,0.3),ROIc)
 
 ```{r,fig.width=15,fig.height=15}
 polplot=ggplot(myfile_denoised, aes(x = ang)) +
-  geom_histogram(binwidth = 15, aes(fill=ROI)) +
-  scale_x_continuous(breaks = seq(0, 360, 60))+theme_bw()+
-  coord_polar(start=deg2rad(-90),direction=-1)+facet_wrap(~ROI,nrow=facetval)+scale_fill_manual(values=pal)+ theme(legend.position="bottom")
+  geom_histogram(binwidth = 15, aes(fill=..x..)) +
+  scale_x_continuous(breaks = seq(0, 360, 60))+theme_classic(base_size=24)+
+  coord_polar(start=deg2rad(0),direction=1)+facet_wrap(~ROI,nrow=2)+ theme(legend.position="bottom")+ scale_fill_viridis_c(option='plasma')+theme(legend.position = "None")
 
 
 
-wrap_plot2(polplot,c(0.7,0.3),ROIc,Ac)
-
+plot_grid(polplot,Ac,nrow = 2,rel_heights = c(0.5,0.6))
 ```
 
 
+<a id='Noise'></a>
 
+# Fit of noise model
+
+
+```{r,fig.width=15,fig.height=15}
+Nc
+```
+
+<a id='psc'></a>
+
+# Percent signal change.
+
+
+![](https://media.giphy.com/media/cPBQitHayOpssCIkWo/giphy.gif){width=900px}
 
 
