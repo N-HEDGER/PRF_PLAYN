@@ -168,6 +168,36 @@ nplot1=ggdraw()+draw_image(Nplot1,scale=zoom)
 Nc=plot_grid(nplot1,NC,nrow=1,rel_widths = c(0.8,0.2))
 
 
+
+Apr='/Volumes/BAHAMUT/OUTPUT/FULL/zoomed_angle.png'
+Api='/Volumes/BAHAMUT/OUTPUT/FULL/inferred_angle.png'
+
+Ap1=ggdraw()+draw_image(Apr,scale=zoom)
+Ap2=ggdraw()+draw_image(Api,scale=zoom)
+
+Aestimate=plot_grid(Ap1,Ap2,nrow=1,labels=c("Estimated Angle","Inferred Angle"))
+
+
+
+Epr='/Volumes/BAHAMUT/OUTPUT/FULL/zoomed_eccentricity.png'
+Epi='/Volumes/BAHAMUT/OUTPUT/FULL/inferred_ecc.png'
+
+Ep1=ggdraw()+draw_image(Epr,scale=zoom)
+Ep2=ggdraw()+draw_image(Epi,scale=zoom)
+
+Eestimate=plot_grid(Ep1,Ep2,nrow=1,labels=c("Estimated Eccentricity","Inferred Eccentricity"))
+
+
+Spr='/Volumes/BAHAMUT/OUTPUT/FULL/zoomed_sigma.png'
+Spi='/Volumes/BAHAMUT/OUTPUT/FULL/inferred_sigma.png'
+
+Sp1=ggdraw()+draw_image(Spr,scale=zoom)
+Sp2=ggdraw()+draw_image(Spi,scale=zoom)
+
+Sestimate=plot_grid(Sp1,Sp2,nrow=1,labels=c("Estimated Sigma","Inferred Sigma"))
+
+
+
 ```
 
 
@@ -324,6 +354,12 @@ plot_grid(Splot,Sc,nrow = 2,rel_heights = c(0.4,0.6))
 ```
 
 
+## Inferences
+
+```{r,fig.width=15,fig.height=10}
+Sestimate
+```
+
 
 <a id='ecc'></a>
 
@@ -337,6 +373,14 @@ Eplot=ggplot(myfile_denoised,aes(x = reorder(ROI, ecc, FUN = mean),y=ecc))+theme
 plot_grid(Eplot,Ec,nrow = 2,rel_heights = c(0.4,0.6))
 
 ```
+
+
+## Inferences
+
+```{r,fig.width=15,fig.height=10}
+Eestimate
+```
+
 
 
 <a id='eccs'></a>
@@ -365,6 +409,14 @@ polplot=ggplot(myfile_denoised, aes(x = ang)) +
 
 plot_grid(polplot,Ac,nrow = 2,rel_heights = c(0.5,0.6))
 ```
+
+
+## Inferences
+
+```{r,fig.width=15,fig.height=10}
+Aestimate
+```
+
 
 
 <a id='Noise'></a>

@@ -234,7 +234,7 @@ out<-normalmixEM(myfile$R2[!is.na(myfile$R2)],k=2)
 ```
 
 ```
-## number of iterations= 49
+## number of iterations= 48
 ```
 
 
@@ -482,6 +482,15 @@ plot_grid(Splot,Sc,nrow = 2,rel_heights = c(0.4,0.6))
 ![](Prf_pres_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
 
 
+## Inferences
+
+
+```r
+Sestimate
+```
+
+![](Prf_pres_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
+
 
 <a id='ecc'></a>
 
@@ -496,7 +505,18 @@ Eplot=ggplot(myfile_denoised,aes(x = reorder(ROI, ecc, FUN = mean),y=ecc))+theme
 plot_grid(Eplot,Ec,nrow = 2,rel_heights = c(0.4,0.6))
 ```
 
-![](Prf_pres_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
+![](Prf_pres_files/figure-html/unnamed-chunk-18-1.png)<!-- -->
+
+
+## Inferences
+
+
+```r
+Eestimate
+```
+
+![](Prf_pres_files/figure-html/unnamed-chunk-19-1.png)<!-- -->
+
 
 
 <a id='eccs'></a>
@@ -514,7 +534,7 @@ SEplot
 ## `geom_smooth()` using formula 'y ~ x'
 ```
 
-![](Prf_pres_files/figure-html/unnamed-chunk-18-1.png)<!-- -->
+![](Prf_pres_files/figure-html/unnamed-chunk-20-1.png)<!-- -->
 
 
 <a id='ang'></a>
@@ -533,7 +553,18 @@ polplot=ggplot(myfile_denoised, aes(x = ang)) +
 plot_grid(polplot,Ac,nrow = 2,rel_heights = c(0.5,0.6))
 ```
 
-![](Prf_pres_files/figure-html/unnamed-chunk-19-1.png)<!-- -->
+![](Prf_pres_files/figure-html/unnamed-chunk-21-1.png)<!-- -->
+
+
+## Inferences
+
+
+```r
+Aestimate
+```
+
+![](Prf_pres_files/figure-html/unnamed-chunk-22-1.png)<!-- -->
+
 
 
 <a id='Noise'></a>
@@ -546,7 +577,7 @@ plot_grid(polplot,Ac,nrow = 2,rel_heights = c(0.5,0.6))
 Nc
 ```
 
-![](Prf_pres_files/figure-html/unnamed-chunk-20-1.png)<!-- -->
+![](Prf_pres_files/figure-html/unnamed-chunk-23-1.png)<!-- -->
 
 <a id='psc'></a>
 
