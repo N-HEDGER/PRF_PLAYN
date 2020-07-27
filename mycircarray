@@ -1,0 +1,23 @@
+seccarray=np.sqrt(stimulus.deg_x**2+stimulus.deg_y**2)
+
+np.max(seccarray)
+
+outer=np.linspace(1, np.max(seccarray), num=4)
+inner=outer-1
+
+
+circarray=np.copy(eccarray)
+
+
+circarray[(circarray > inner[0]) & (circarray < outer[0])]=1
+circarray[(circarray > inner[1]) & (circarray < outer[1])]=2
+circarray[(circarray > inner[2]) & (circarray < outer[2])]=3
+circarray[(circarray > inner[3]) & (circarray < outer[3])]=4
+
+circarray[(circarray!=1) & (circarray!=2) & (circarray!=3)& (circarray!=4)]=np.nan
+circarray[R2array<15]=np.nan
+circles = cx.Vertex(circarray, subject='02',cmap='gist_ncar',description='Mycirc',threshold=1e-6)
+fig=cx.webshow(circles, with_rois=True, with_curvature=True, with_colorbar=True)
+
+
+

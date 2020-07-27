@@ -36,6 +36,25 @@ library(kableExtra)
 library(stringr)
 library(pracma)
 library(viridis)
+
+
+
+
+# Make an eccentricity coor wheel. 
+ang=rep(100,360)
+
+
+ang=(rep(1:360,50))
+val=rep(1:8,each=50)
+
+
+x=data.frame(cbind(ang,val))
+
+p2 <- ggplot(data = x, aes(x = ang,y=val)) +
+  geom_point(aes(color=val),size=7) +
+  scale_x_continuous(breaks = seq(0, 360, 60))+scale_y_continuous(limits=c(0,9))+
+  coord_polar(start=deg2rad(0),direction=1)+theme_void()+
+  scale_color_viridis(option='plasma')+ theme(legend.position = "none")
 ```
 
 
@@ -125,11 +144,13 @@ scale_color_viridis(option='plasma')+ theme(legend.position="none")+theme_classi
 
 
 RC=colorscale('up',max(na.omit(myfile$R2)),"R2")
-EC=colorscale('up',15,"Eccentricity")
+EC=colorscale('up',8,"Eccentricity (DVA)")
 AC=colorscale('polar',10,"Polar Angle")
-SC=colorscale('up',10,"Sigma")
+SC=colorscale('up',5,"Sigma (DVA)")
 NC=colorscale('up',60,"Noise R2")
 
+
+PC=colorscale('up',6,"% Signal Change")
 
 zoom=1
 
@@ -238,7 +259,7 @@ thresh=out$mu[1]+(1.96*out$sigma[1])
 
 myfile$noisesep=factor(ifelse(myfile$R2<thresh,0,1),levels=c(0,1),labels=c("noise","signal"))
 
-varex=ggplot(data = myfile,aes(x = R2))+geom_histogram(color="black",aes(fill=noisesep),binwidth=.005, position="identity")+geom_vline(xintercept=thresh)+recipe
+varex=ggplot(data = myfile,aes(x = R2))+geom_histogram(color="black",aes(fill=noisesep),binwidth=.05, position="identity")+geom_vline(xintercept=thresh)+recipe+theme_classic(base_size = 18)
 varex
 ```
 
@@ -256,8 +277,10 @@ Now, additionally determine the voxels that are tuned to the screen.
 ```{r}
 myfile$onscreen=rep(0,nrow(myfile))
 
-myfile$onscreen=ifelse(myfile$X>-10 & myfile$X<10 &  myfile$Y>-10 & myfile$Y<10,1,0)
+myfile$onscreen=ifelse(myfile$X>-8 & myfile$X<8 &  myfile$Y>-8 & myfile$Y<8,1,0)
 
+
+myfile$alpha=myfile$R2/100
 ```
 
 
@@ -265,7 +288,7 @@ Show position of prfs in relation to the screen.
 
 
 ```{r}
-ggplot(data=myfile[myfile$ROI!="None",],aes(x=X,y=Y))+geom_rect(xmin=-10,xmax=10,ymin=-10,ymax=10)+geom_point(aes(colour=onscreen))+recipe
+ggplot(data=myfile[myfile$ROI!="None",],aes(x=X,y=Y))+geom_rect(xmin=-10,xmax=10,ymin=-10,ymax=10)+geom_point(aes(colour=factor(onscreen),alpha=alpha))+recipe+scale_colour_viridis(discrete=TRUE,option='plasma')
 ```
 
 ```{r}
@@ -318,14 +341,25 @@ Also plot as a function of ROI.
 
 ```{r,fig.width=15,fig.height=15}
 
+
+
 cov1=ggplot()+geom_hline(yintercept=0,colour='white')+
-theme_classic()+theme(panel.background = element_rect(fill='black'))+geom_vline(xintercept=0,colour='white')+geom_circle(alpha=.1,data=myfile_denoised,mapping=aes(x0=X,y0=Y,r=sigma/2,fill=ROI,alpha=.1),colour='transparent')+xlim(-10,10)+ylim(-10,10)+coord_fixed()+facet_wrap(~ROI,nrow=facetval)+ theme(legend.position="bottom")+theme(legend.position = "None")+scale_colour_viridis(discrete = TRUE,option='plasma')
+theme_classic(base_size=24)+theme(panel.background = element_rect(fill='black'))+geom_vline(xintercept=0,colour='white')+geom_circle(alpha=.1,data=myfile_denoised,mapping=aes(x0=X,y0=Y,r=sigma/2,fill=ROI,alpha=alpha),colour='transparent')+xlim(-10,10)+ylim(-10,10)+coord_fixed()+facet_wrap(~ROI,nrow=facetval)+ theme(legend.position="bottom")+theme(legend.position = "None")+scale_fill_viridis(discrete = TRUE,option='plasma')
+
+
+
+myfile_denoised$Hemisphere=factor(myfile_denoised$Hemisphere,levels=c(1,2),labels=c("Left","Right"))
+
+cov2=ggplot(myfile_denoised, aes(x = X, y = Y))+geom_hline(yintercept=0,colour='white')+
+theme_classic(base_size=24)+theme(panel.background = element_rect(fill='black'))+geom_vline(xintercept=0,colour='white')+geom_point(aes(fill=ROI,colour=ROI,alpha=alpha))+xlim(-10,10)+ylim(-10,10)+coord_fixed()+facet_wrap(~ROI,nrow=facetval)+ theme(legend.position="bottom")+theme(legend.position = "None")+scale_colour_viridis(discrete = TRUE,option='plasma')
+
+
 
 cov1
 ```
 
 ```{r,fig.width=15,fig.height=15}
-ggplot(myfile_denoised, aes(x = X, y = Y))+xlim(-10,10)+ylim(-10,10)+geom_hline(yintercept=0,colour='white')+geom_vline(xintercept=0,colour='white')+coord_fixed()+theme_classic()+theme(panel.background = element_rect(fill='black')) +geom_density_2d()+facet_wrap(. ~ROI,nrow=facetval) + stat_density_2d(aes(fill = after_stat(level)), geom = "polygon")+ scale_fill_viridis(option='plasma')
+ggplot(myfile_denoised, aes(x = X, y = Y))+xlim(-10,10)+ylim(-10,10)+geom_hline(yintercept=0,colour='white')+geom_vline(xintercept=0,colour='white')+coord_fixed()+theme_classic(base_size=24)+theme(panel.background = element_rect(fill='black')) +geom_density_2d()+facet_wrap(. ~ROI,nrow=facetval) + stat_density_2d(aes(fill = after_stat(level)), geom = "polygon")+ scale_fill_viridis(option='plasma')
 ```
 
 
@@ -335,7 +369,7 @@ ggplot(myfile_denoised, aes(x = X, y = Y))+xlim(-10,10)+ylim(-10,10)+geom_hline(
 
 
 ```{r,fig.width=15,fig.height=15}
-R2plot=ggplot(myfile_denoised,aes(x = reorder(ROI, R2, FUN = mean),y=R2))+theme_classic(base_size=24)+stat_summary(fun = mean, geom = "bar", width = 0.5,aes(fill=..y..))+stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.3)+ theme(legend.position="bottom")+xlab("ROI")+ylab("Variance explained")+ scale_fill_viridis_c(option='plasma',begin=0,end = 0.8)+theme(legend.position = "None")
+R2plot=ggplot(myfile_denoised,aes(x = reorder(ROI, R2, FUN = mean),y=R2))+theme_classic(base_size=24)+stat_summary(fun = mean, geom = "bar", width = 0.5,aes(fill=..y..))+stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.3)+ theme(legend.position="bottom")+xlab("ROI")+ylab("R2")+ scale_fill_viridis_c(option='plasma',begin=0,end = 0.8)+theme(legend.position = "None")
 
 
 
@@ -347,7 +381,7 @@ plot_grid(R2plot,R2c,nrow = 2,rel_heights = c(0.4,0.6))
 # Variable summaries: Sigma
 
 ```{r,fig.width=15,fig.height=15}
-Splot=ggplot(myfile_denoised,aes(x = reorder(ROI, sigma, FUN = mean),y=sigma))+theme_classic(base_size=24)+stat_summary(fun = mean, geom = "bar", width = 0.5,aes(fill=..y..))+stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.3)+ theme(legend.position="none")+xlab("ROI")+ylab("Sigma")+ scale_fill_viridis_c(option='plasma',begin=0,end=0.5)
+Splot=ggplot(myfile_denoised,aes(x = reorder(ROI, sigma, FUN = mean),y=sigma))+theme_classic(base_size=24)+stat_summary(fun = mean, geom = "bar", width = 0.5,aes(fill=..y..))+stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.3)+ theme(legend.position="none")+xlab("ROI")+ylab("Sigma")+ scale_fill_viridis_c(option='plasma',begin=0,end=1)
 
 plot_grid(Splot,Sc,nrow = 2,rel_heights = c(0.4,0.6))
 
@@ -367,7 +401,7 @@ Sestimate
 # Variable summaries: Eccentricity
 
 ```{r,fig.width=15,fig.height=15}
-Eplot=ggplot(myfile_denoised,aes(x = reorder(ROI, ecc, FUN = mean),y=ecc))+theme_classic(base_size=24)+stat_summary(fun = mean, geom = "bar", width = 0.5,aes(fill=..y..))+stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.3)+ theme(legend.position="none")+xlab("ROI")+ylab("Eccentricity")+ scale_fill_viridis_c(option='plasma',begin=0,end=0.3)
+Eplot=ggplot(myfile_denoised,aes(x = reorder(ROI, ecc, FUN = mean),y=ecc))+theme_classic(base_size=24)+stat_summary(fun = mean, geom = "bar", width = 0.5,aes(fill=..y..))+stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.3)+ theme(legend.position="none")+xlab("ROI")+ylab("Eccentricity")+ scale_fill_viridis_c(option='plasma',begin=0,end=0.62)
 
 
 plot_grid(Eplot,Ec,nrow = 2,rel_heights = c(0.4,0.6))
@@ -392,6 +426,12 @@ SEplot=ggplot(myfile_denoised,aes(x = ecc,y=sigma))+recipe+geom_point(aes(color=
 
 SEplot
 
+
+SEplot2=ggplot(myfile_denoised,aes(x = ecc,y=sigma))+recipe+ theme(legend.position="bottom")+theme_classic(base_size=24)+geom_smooth(method='lm',aes(colour=ROI))+xlab("Eccentricity (DVA)")+ylab("Size (DVA)")+scale_colour_viridis(discrete = TRUE,option='plasma')
+
+SEplot2
+
+
 ```
 
 
@@ -407,9 +447,83 @@ polplot=ggplot(myfile_denoised, aes(x = ang)) +
 
 
 
+
+
 plot_grid(polplot,Ac,nrow = 2,rel_heights = c(0.5,0.6))
 ```
+```{r,fig.width=15,fig.height=15}
 
+
+
+
+
+ROILABS=ROILABS[-1]
+
+mybiglistL <- list()
+mybiglistR <- list()
+
+for (i in 1:length(ROILABS)){
+  polplotL=ggplot(myfile_denoised[myfile_denoised$ROI==ROILABS[i] & myfile_denoised$Hemisphere=="Left",], aes(x = ang)) +
+  geom_histogram(binwidth = 15, aes(fill=..x..)) +
+  scale_x_continuous(breaks = seq(0, 360, 60))+theme_void(base_size=18)+
+  coord_polar(start=deg2rad(0),direction=1)+ theme(legend.position="bottom")+ scale_fill_viridis_c(option='plasma')+theme(legend.position = "None")+ggtitle(ROILABS[i])
+  
+    polplotR=ggplot(myfile_denoised[myfile_denoised$ROI==ROILABS[i] & myfile_denoised$Hemisphere=="Right",], aes(x = ang)) +
+  geom_histogram(binwidth = 15, aes(fill=..x..)) +
+  scale_x_continuous(breaks = seq(0, 360, 60))+theme_void(base_size=18)+
+  coord_polar(start=deg2rad(0),direction=1)+ theme(legend.position="bottom")+ scale_fill_viridis_c(option='plasma')+theme(legend.position = "None")+ggtitle(ROILABS[i])
+  
+  
+  
+  name <- paste('item:',i,sep='')
+  mybiglistL[[name]]=polplotL
+  mybiglistR[[name]]=polplotR
+}
+
+plot_grid(plotlist=mybiglistL,ncol = 3)
+
+
+ggplot(myfile_denoised, aes(x = ang)) +
+  geom_histogram(binwidth = 15, aes(fill=..x..)) +
+  scale_x_continuous(breaks = seq(0, 360, 60))+theme_void(base_size=18)+
+  coord_polar(start=deg2rad(0),direction=1)+ theme(legend.position="bottom")+ scale_fill_viridis_c(option='plasma')+theme(legend.position = "None")+facet_wrap(~ROI, scales = "free_y")
+
+
+
+cp <- coord_polar(start=deg2rad(0),direction=1)
+#cp$is_free <- function() TRUE
+
+
+
+myfile_denoised$Hemisphere=factor(myfile_denoised$Hemisphere,levels=c(1,2),labels=c("Left","Right"))
+
+ggplot(myfile_denoised, aes(x = ang)) +
+  geom_histogram(binwidth = 15, aes(fill=..x..)) +
+  scale_x_continuous(breaks = seq(0, 360, 60))+theme_minimal(base_size=18)+
+  cp+ theme(legend.position="bottom")+ scale_fill_viridis_c(option='plasma')+theme(legend.position = "None")+facet_grid(ROI~Hemisphere,scales='free_y')+theme(aspect.ratio = 1)+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())+
+  theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank())
+
+
+
+
+ggplot(myfile_denoised[myfile_denoised$Hemisphere=="Right",], aes(x = ang)) +
+  geom_histogram(binwidth = 15, aes(fill=..x..)) +
+  scale_x_continuous(breaks = seq(0, 360, 60))+theme_minimal(base_size=18)+
+  cp+ theme(legend.position="bottom")+ scale_fill_viridis_c(option='plasma')+theme(legend.position = "None")+facet_wrap(.~ROI, scales = "free",ncol=3)+theme(aspect.ratio = 1)+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())+
+  theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank())
+
+
+```
 
 ## Inferences
 
@@ -417,7 +531,99 @@ plot_grid(polplot,Ac,nrow = 2,rel_heights = c(0.5,0.6))
 Aestimate
 ```
 
+```{r}
+distance=1:length(angdata)
 
+mydat=data.frame(cbind(distance),angdata)
+
+
+for (i in 1:53){
+myplot=ggplot(mydat[mydat$distance==i,], aes(x = as.numeric(angdata))) +
+  geom_histogram(binwidth = 5, aes(fill=..x..)) +theme_classic(base_size=24)+
+  coord_polar(start=deg2rad(0),direction=1)+
+  scale_x_continuous(breaks = seq(0, 360, 60),limits=c(0,360))+facet_wrap(.~distance,nrow=7)+ theme(legend.position="bottom")+ scale_fill_viridis_c(option='plasma')+theme(legend.position = "None")+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())+
+  theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank())
+
+outputdir='/Volumes/BAHAMUT/OUTPUT/FULL/pgif'
+
+ggsave(myplot, file=paste0(outputdir,"/",sprintf("name_%03d", i),'.bmp'), device="bmp",dpi=300,width=5,height=5,units="in")
+  
+}
+
+```
+
+
+```{r}
+
+for (i in 1:53){
+
+
+myplot=ggplot(mydat[mydat$distance<i,], aes(x=distance,y = angdata))+geom_smooth(method='gam',aes(colour=angdata)) +
+  geom_point(aes(fill=angdata,colour=angdata),size=8)+theme_classic(base_size=24)+geom_line(aes(colour=angdata))+scale_fill_viridis_c(option='plasma',begin=0.75,end=1)+ scale_colour_viridis_c(option='plasma',begin=0.72,end=1)+xlab("Distance Across Surface")+ylab("Polar Angle")+theme(legend.position = "None")+
+  scale_y_continuous(breaks = seq(260, 360, 20),limits=c(260,360))+scale_x_continuous(breaks = seq(0, 60, 20),limits=c(0,60))
+  
+outputdir='/Volumes/BAHAMUT/OUTPUT/FULL/pgif2'
+
+ggsave(myplot, file=paste0(outputdir,"/",sprintf("name_%03d", i),'.bmp'), device="bmp",dpi=300,width=9,height=4,units="in")
+}
+  
+
+
+sarray=c(0.05333297, 0.03688655, 0.15592493, 0.3536193 , 0.04459672,
+       0.10259102, 0.39683236, 0.21385456, 0.21733328, 0.23587112,
+       0.22694719, 0.22160717, 0.00285913, 0.09434798, 0.11107153,
+       0.11367039, 0.1109507 , 0.10946915, 0.89094101, 0.82755616,
+       0.70007392, 0.51067199, 0.47273424, 0.48067364, 0.5340549 ,
+       0.58018232, 0.57169172, 0.5401432 , 0.53882203, 0.56926425,
+       0.62383187, 0.57185129, 0.23861517, 0.30232912, 0.53935414,
+       0.97085317, 4.53181094, 3.93760611, 3.44469899, 3.39932267,
+       3.60039606, 3.39109282, 3.22632298, 3.05376288, 3.02141992,
+       3.06731558, 3.12347436, 3.09239885, 3.12797881, 3.13793354,
+       3.37879456, 4.53324573, 5.81992917, 4.47865706, 3.96388647,
+       3.84521415, 4.09842363, 3.59492557, 4.92120512, 5.02449878,
+       5.45151429, 4.36269562)
+
+
+distance=1:length(sarray)
+
+mydat=data.frame(cbind(distance),sarray)
+
+
+ggplot(mydat, aes(x=distance,y = sarray))+geom_smooth(method='gam',aes(colour=sarray)) +
+  geom_point(aes(fill=sarray,colour=sarray),size=8)+theme_classic(base_size=24)+geom_line(aes(colour=sarray))+scale_fill_viridis_c(option='plasma',begin=0,end=1)+ scale_colour_viridis_c(option='plasma',begin=0,end=1)+xlab("Distance Across Surface")+ylab("Sigma (DVA)")+theme(legend.position = "None")
+
+
+
+
+eccarray=c(0.39931563, 0.45281627, 0.4706069 , 0.44622278, 0.61274182,
+       0.58298489, 0.77466892, 1.1018093 , 1.69977862, 1.96540602,
+       2.27732924, 2.43657357, 2.50215307, 2.58696522, 2.50132602,
+       2.51348956, 2.50758871, 2.49521119, 2.56367556, 2.77780266,
+       2.98510571, 3.69740769, 3.95590928, 4.00523449, 4.62955111,
+       4.70514574, 4.95126224, 5.0029292 , 5.52926117, 5.29574136,
+       5.71948261, 5.58351394, 6.0253031 , 5.71233233, 5.5358075 ,
+       5.8919324 , 6.10336855, 6.64436596, 6.68454244, 6.79414736,
+       6.86031225, 7.00128758, 6.81145394, 7.06989186, 7.09988214,
+       7.4395896 , 7.90053432, 7.75506761, 8.16214025, 8.54312247,
+       9.84724167)
+
+
+distance=1:length(eccarray)
+
+mydat=data.frame(cbind(distance),eccarray)
+
+
+ggplot(mydat, aes(x=distance,y = eccarray))+geom_smooth(method='gam',aes(colour=eccarray)) +
+  geom_point(aes(fill=eccarray,colour=eccarray),size=8)+theme_classic(base_size=24)+geom_line(aes(colour=eccarray))+scale_fill_viridis_c(option='plasma',begin=0,end=1)+ scale_colour_viridis_c(option='plasma',begin=0,end=1)+xlab("Distance Across Surface")+ylab("Eccentricity (DVA)")+theme(legend.position = "None")
+
+
+
+```
 
 <a id='Noise'></a>
 
